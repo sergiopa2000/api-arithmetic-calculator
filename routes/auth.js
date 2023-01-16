@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
@@ -30,13 +30,16 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({
         name: user.name,
         id: user._id
-    }, "Stack", {
-        expiresIn: '5m' // expires in 365 days
-   }, process.env.PRIVATE_KEY)
+    }, process.env.PRIVATE_KEY
+    , { expiresIn: 900 })
     
     res.json({
         message: 'You have successfully logged in',
         token: token
     })
 });
+
+router.post('/logout', (req, res) => {
+    res.json({message: "success"})
+})
 module.exports = router;

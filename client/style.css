@@ -1,0 +1,41 @@
+body, html{
+    height: 100%;
+}
+p{
+    margin: 0;
+}
+
+.navbar{
+    background-color: rgb(25, 28, 31) !important;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-right{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.navbar-right > *{
+    transition: 0.3s all ease;
+}
+
+.navbar-right i{
+    font-size: 1em;
+    font-family: "fontawesome";
+    color: white;
+}
+
+.navbar-right > *:hover{
+    opacity: 0.8;
+}
+
+.login-modal{
+    display: none;
+}
+
+.log-out{
+    display: none;
+}
