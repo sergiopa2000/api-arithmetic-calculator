@@ -22,8 +22,11 @@
         </div>
     </nav>
 
+    <h1 id="state"></h1>
     <div class="calculator">
-        <button id="calc">calculate</button>
+        <p id="result" class="result"></p>
+        <input id="operation" class="form-control" type="text" name="">
+        <button class="btn btn-light" id="calc">Calculate</button>
     </div>
 
     <!-- Login Modal -->
@@ -46,7 +49,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="close-login" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" value="Log in"></input>
                 </div>
             </form>
@@ -79,7 +82,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="close-register" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" value="Register"></input>
                 </div>
             </form>

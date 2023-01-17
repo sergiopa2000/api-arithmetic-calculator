@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
         id: user._id
     }, process.env.PRIVATE_KEY
     , { expiresIn: 900 })
-    
+
     res.json({
         message: 'You have successfully logged in',
         token: token
