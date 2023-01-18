@@ -33,6 +33,7 @@ const srv = app.listen(PORT, () => {
 const spawn = require('child_process').spawn;
 const wss = new WebSocket.Server({ server: srv, path: '/ws' });
 const BlackListToken = require('./models/blacklist-token');
+const parser = require('./jison/parser');
 
 // Create an empty list that can be used to store WebSocket clients.
 var wsClients = [];
@@ -69,33 +70,20 @@ wss.on('connection', async (ws, req) => {
                         expiration: date
                     });
                     blacklisted.save();
+                    delete wsClients[token];
                 }
             }
             if(operation){
-                let phpScript = spawn('php', ["./calculator.php", operation]);
+                let parsed = parser.parse(operation);
+                if(parsed.result && parsed.result.toString().length > 8){
+                    parsed.result = parsed.result.toExponential().replace(/e\+?/, ' x 10^');
+                }
                 ws.send(JSON.stringify({
                     message: 'Your operation is being processed...'
                 }));
-                phpScript.stdout.on('data', data =>{
-                    data = JSON.parse(data.toString());
-                    ws.send(JSON.stringify(data));
-                    ws.close();
-                })
+                ws.send(JSON.stringify({...parsed, operation: operation}));
+                ws.close();
             }
-        }
-    });
-    
-
-    ws.on('message', (data) => {
-        for (const [token, connection] of Object.entries(wsClients)) {
-            jwt.verify(token, process.env.PRIVATE_KEY, (err, decoded) => {
-                if (err) {
-                    connection.send("Error: Your token is no longer valid. Please reauthenticate.");
-                    connection.close();
-                } else {
-                    connection.send(wsUsername + ": " + data);
-                }
-            });
         }
     });
 });

@@ -96,8 +96,13 @@ document.getElementById("calc").addEventListener("click", () =>{
             resultDom.style.color = "green";
             resultDom.innerHTML = data.result;
         }else if(data.error){
+            let column = data.column;
+            operationError = data.operation.split('');
+            let errorPart = operationError.splice(column-1).join('');
+            operationError = operationError.join('') + `<span class="error-part">${errorPart}</span>`;
+
             resultDom.style.color = "red";
-            resultDom.innerHTML = "Error";
+            resultDom.innerHTML = `Error: <span class="error-operation">${operationError}</span>`;
         }else if(data.message){
             resultDom.style.color = "white";
             resultDom.innerHTML = data.message;

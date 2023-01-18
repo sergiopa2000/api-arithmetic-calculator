@@ -65,3 +65,12 @@ p{
     margin: 20px;
     text-align: center;
 }
+
+.error-operation{
+    color: gray;
+}
+
+.error-part{
+    color: red;
+    font-weight: 700;
+}
