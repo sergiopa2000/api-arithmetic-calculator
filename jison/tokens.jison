@@ -49,9 +49,8 @@
 
 expressions
 	: expresion EOF { return {
-			result: $1
-		};
-	}
+						result: $1
+					}}
 	| error { 
 		return {
 			error: true,

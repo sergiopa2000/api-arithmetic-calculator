@@ -81,8 +81,10 @@ wss.on('connection', async (ws, req) => {
                 ws.send(JSON.stringify({
                     message: 'Your operation is being processed...'
                 }));
-                ws.send(JSON.stringify({...parsed, operation: operation}));
-                ws.close();
+                setTimeout(() =>{
+                    ws.send(JSON.stringify({...parsed, operation: operation}));
+                    ws.close();
+                }, 1000)
             }
         }
     });
