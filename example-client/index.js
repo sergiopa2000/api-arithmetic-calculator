@@ -1,6 +1,6 @@
 let token = null;
 async function calc(){
-    let response = await fetch("http://localhost:8000/api/calc", {
+    let response = await fetch("https://localhost/api/calc", {
         method: "GET",
         headers:{
             'Content-Type': 'application/json'
@@ -11,7 +11,7 @@ async function calc(){
 }
 
 async function register(data){
-    let response = await fetch("http://localhost:8000/api/register", {
+    let response = await fetch("https://localhost/api/register", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ async function register(data){
 }
 
 async function login(credentials){
-    let response = await fetch("http://localhost:8000/api/login", {
+    let response = await fetch("https://localhost/api/login", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -34,7 +34,7 @@ async function login(credentials){
 }
 
 async function logout(){
-    let response = await fetch("http://localhost:8000/api/logout", {
+    let response = await fetch("https://localhost/api/logout", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e){
         .then((response) => {
             if (response.error) {
                 document.getElementById("state").style.color = "red";
-                document.getElementById("state").innerHTML = "An error ocurred on register";
+                document.getElementById("state").innerHTML = response.error;
             }else{
                 token = response.token;
                 document.getElementById("state").style.color = "green";
@@ -77,7 +77,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
         .then((response) => {
             if (response.error) {
                 document.getElementById("state").style.color = "red";
-                document.getElementById("state").innerHTML = "An error ocurred on login";
+                document.getElementById("state").innerHTML = response.error;
             }else{
                 token = response.token;
                 document.getElementById("state").style.color = "green";

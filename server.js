@@ -24,6 +24,7 @@ mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@lo
  .then(() => console.log("Database connected!"))
  .catch(err => console.log(err));
 
+const BlackListToken = require('./models/blacklist-token');
 // Periodically clean blacklisted tokens
 setInterval(async () =>{
     const all = await BlackListToken.find();
@@ -31,7 +32,7 @@ setInterval(async () =>{
     for (const token of all) {
         if(date > token.expiration) token.delete();
     }
-}, 480000);
+}, 1000);
 
 const PORT = process.env.PORT || 3001;
 const srv = app.listen(PORT, () => {
