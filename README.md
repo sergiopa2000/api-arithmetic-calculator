@@ -6,7 +6,7 @@ operations request, being blacklisted on database (Cleans all expired tokens on 
 
 A proxy server is also implemented for request controlling purposes.
 
-It also uses a WebSocket server to control and response client's requests. (Will implement a jon queue hopefully soon).
+It also uses a WebSocket server to control and response client's requests. (Will implement a job queue hopefully soon).
 
 Finally jison lexical parser is used to parse and validate arithmetic expressions.
 
