@@ -16,6 +16,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "fast-mongoose-job-queue": "^1.0.14",
+    "http-proxy-middleware": "^2.0.6",
     "jison": "^0.4.18",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.3",

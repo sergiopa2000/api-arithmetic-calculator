@@ -1,15 +1,17 @@
 let token = null;
 async function calc(){
-    let response = await fetch("http://localhost:3000/api/calc", {
+    let response = await fetch("http://localhost:8000/api/calc", {
         method: "GET",
         headers:{
             'Content-Type': 'application/json'
         }
     });
+
+    return response.json();
 }
 
 async function register(data){
-    let response = await fetch("http://localhost:3000/api/register", {
+    let response = await fetch("http://localhost:8000/api/register", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -21,7 +23,7 @@ async function register(data){
 }
 
 async function login(credentials){
-    let response = await fetch("http://localhost:3000/api/login", {
+    let response = await fetch("http://localhost:8000/api/login", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -32,7 +34,7 @@ async function login(credentials){
 }
 
 async function logout(){
-    let response = await fetch("http://localhost:3000/api/logout", {
+    let response = await fetch("http://localhost:8000/api/logout", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
@@ -51,7 +53,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e){
     document.getElementById("close-register").click();
     register(data)    
         .then((response) => {
-            if (response.ok) {
+            if (response.error) {
                 document.getElementById("state").style.color = "red";
                 document.getElementById("state").innerHTML = "An error ocurred on register";
             }else{
@@ -73,7 +75,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
     document.getElementById("close-login").click();
     login(data)
         .then((response) => {
-            if (response.ok) {
+            if (response.error) {
                 document.getElementById("state").style.color = "red";
                 document.getElementById("state").innerHTML = "An error ocurred on login";
             }else{
@@ -84,28 +86,31 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
         })
 })
 
-document.getElementById("calc").addEventListener("click", () =>{
-    let input = document.getElementById("operation").value;
-    const operation = encodeURIComponent(input);
-    ws = new WebSocket("ws://localhost:3000/ws?token=" + token + "&operation=" + operation);
-    
-    ws.onmessage = message =>{
-        let resultDom = document.getElementById("result");
-        let data = JSON.parse(message.data)
-        if(data.result){
-            resultDom.style.color = "green";
-            resultDom.innerHTML = data.result;
-        }else if(data.error){
-            let column = data.column;
-            operationError = data.operation.split('');
-            let errorPart = operationError.splice(column-1).join('');
-            operationError = operationError.join('') + `<span class="error-part">${errorPart}</span>`;
-
-            resultDom.style.color = "red";
-            resultDom.innerHTML = `Error: <span class="error-operation">${operationError}</span>`;
-        }else if(data.message){
-            resultDom.style.color = "white";
-            resultDom.innerHTML = data.message;
-        }
-    }
+document.getElementById("calc").addEventListener("click", async () =>{
+    calc()
+        .then(response =>{
+            let input = document.getElementById("operation").value;
+            const operation = encodeURIComponent(input);
+            ws = new WebSocket(`ws://${response.ip}:${response.port}/ws?token=${token}&operation=${operation}`);
+            
+            ws.onmessage = message =>{
+                let resultDom = document.getElementById("result");
+                let data = JSON.parse(message.data)
+                if(data.result){
+                    resultDom.style.color = "green";
+                    resultDom.innerHTML = data.result;
+                }else if(data.error){
+                    let column = data.column;
+                    operationError = data.operation.split('');
+                    let errorPart = operationError.splice(column-1).join('');
+                    operationError = operationError.join('') + `<span class="error-part">${errorPart}</span>`;
+        
+                    resultDom.style.color = "red";
+                    resultDom.innerHTML = `Error: <span class="error-operation">${operationError}</span>`;
+                }else if(data.message){
+                    resultDom.style.color = "white";
+                    resultDom.innerHTML = data.message;
+                }
+            }
+        });
 })
