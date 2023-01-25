@@ -17,7 +17,6 @@ function getLocalhostPublicIp(){
     
             // The whole response has been received. Print out the result.
             res.on('end', () => {
-                console.log(data);
                 resolve(data);
             });
     

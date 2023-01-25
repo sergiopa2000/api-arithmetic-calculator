@@ -21,6 +21,9 @@ function startProxy(){
         {
             key: fs.readFileSync("./proxy/certificates/proxy.key"),
             cert: fs.readFileSync("./proxy/certificates/proxy.crt"),
+            // ca: fs.readFileSync("./proxy/certificates/proxy.key"),
+            // requestCert: true,
+            // rejectUnauthorized: false
         }, app)
     .listen(PORT, ()=>{
         console.log(`proxy listening on: ${PORT}`)

@@ -25,7 +25,6 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    console.log("peticion");
     const user = await User.findOne({ email: req.body.email });
     if (!user) return res.status(500).json({ error: 'User not found' });
 
