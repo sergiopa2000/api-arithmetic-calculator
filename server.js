@@ -1,5 +1,7 @@
 const express = require('express');
+const https = require('https');
 const mongoose = require('mongoose');
+const fs = require("fs");
 
 const bodyparser = require('body-parser');
 const cors = require('cors');
@@ -35,8 +37,13 @@ setInterval(async () =>{
 }, 1000);
 
 const PORT = process.env.PORT || 3001;
-const srv = app.listen(PORT, () => {
-    console.log(`server listening on: ${PORT}`)
-    startProxy();
-    startWsServer(srv);
-});
+const srv = https
+    .createServer({
+        key: fs.readFileSync("./proxy/certificates/localhost.key"),
+        cert: fs.readFileSync("./proxy/certificates/localhost.crt"),
+    }, app)
+    .listen(PORT, ()=>{
+        console.log(`server listening on: ${PORT}`)
+        startProxy();
+        startWsServer(srv);
+    });

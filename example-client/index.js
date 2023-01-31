@@ -10,48 +10,18 @@ async function calc(){
     return response.json();
 }
 
-async function register(data){
-    let response = await fetch("https://localhost/api/register", {
-        method: "POST",
-        headers:{
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({...data})
-    });
-
-    return response.json();
-}
-
-async function login(credentials){
+async function login(){
     let response = await fetch("https://localhost/api/login", {
         method: "POST",
         headers:{
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({...credentials})
     });
     return response.json();
 }
 
-async function logout(){
-    let response = await fetch("https://localhost/api/logout", {
-        method: "POST",
-        headers:{
-            'Content-Type': 'application/json'
-        }
-    });
-    return response.json();
-}token
-
-document.getElementById("registerForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    let data = {};
-    const formData = new FormData(this)
-    for (const pair of formData.entries()) {
-        data[pair[0]] = pair[1];
-    }
-    document.getElementById("close-register").click();
-    register(data)    
+document.querySelector(".log-in").addEventListener("click", function(e){
+    login()
         .then((response) => {
             if (response.error) {
                 document.getElementById("state").style.color = "red";
@@ -59,39 +29,21 @@ document.getElementById("registerForm").addEventListener("submit", function(e){
             }else{
                 token = response.token;
                 document.getElementById("state").style.color = "green";
-                document.getElementById("state").innerHTML = "Your have succesfully registered";
-
-            }
-        })
-})
-
-document.getElementById("loginForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    let data = {};
-    const formData = new FormData(this)
-    for (const pair of formData.entries()) {
-        data[pair[0]] = pair[1];
-    }
-    document.getElementById("close-login").click();
-    login(data)
-        .then((response) => {
-            if (response.error) {
-                document.getElementById("state").style.color = "red";
-                document.getElementById("state").innerHTML = response.error;
-            }else{
-                token = response.token;
-                document.getElementById("state").style.color = "green";
+                document.querySelector(".log-in").style.display = "none";
+                document.querySelector(".attemps-left").style.display = "block";
+                document.querySelector(".attemps-left").innerHTML = "Attemps left: " + response.attemps;
                 document.getElementById("state").innerHTML = "Your have succesfully logged in";
             }
         })
 })
 
-document.getElementById("calc").addEventListener("click", async () =>{
+document.querySelector(".calculator").addEventListener("submit", async (e) =>{
+    e.preventDefault();
     calc()
         .then(response =>{
             let input = document.getElementById("operation").value;
             const operation = encodeURIComponent(input);
-            ws = new WebSocket(`ws://${response.ip}:${response.port}/ws?token=${token}&operation=${operation}`);
+            ws = new WebSocket(`wss://${response.ip}:${response.port}/ws?token=${token}&operation=${operation}`);
             
             ws.onmessage = message =>{
                 let resultDom = document.getElementById("result");
@@ -110,6 +62,16 @@ document.getElementById("calc").addEventListener("click", async () =>{
                 }else if(data.message){
                     resultDom.style.color = "white";
                     resultDom.innerHTML = data.message;
+                }
+
+                if(typeof data.attemps != "undefined"){
+                    if(data.attemps == 0){
+                        document.querySelector(".attemps-left").style.display = "none";
+                        document.querySelector(".log-in").style.display = "block";
+                    }else{
+                        document.querySelector(".attemps-left").innerHTML = "Attemps left: " + data.attemps;
+                    }
+                    
                 }
             }
         });

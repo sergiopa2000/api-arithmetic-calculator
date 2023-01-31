@@ -25,25 +25,16 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(500).json({ error: 'User not found' });
-
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) return res.status(500).json({ error: 'Wrong password' })
-    
+    const serialNumber = req.headers['serial'];
     const token = jwt.sign({
-        name: user.name,
-        id: user._id
+        serialNumber: serialNumber,
     }, process.env.PRIVATE_KEY
     , { expiresIn: 900 })
 
     res.json({
         message: 'You have successfully logged in',
-        token: token
+        token: token,
+        attemps: 5
     })
 });
-
-router.post('/logout', (req, res) => {
-    res.json({message: "success"})
-})
 module.exports = router;

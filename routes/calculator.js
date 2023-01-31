@@ -29,6 +29,8 @@ function getLocalhostPublicIp(){
 }
 
 router.get('/calc', async (req, res) => {
+    // const cert = req.socket;
+    // console.log(cert);
     let ipAddress = req.socket.remoteAddress.replace(/^.*:/, '');
     if(ipAddress == "127.0.0.1"){
         ipAddress = await getLocalhostPublicIp();

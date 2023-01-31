@@ -9,9 +9,21 @@ function startProxy(){
     const app = express();
     app.use(cors());
     
+    const targetPort = process.env.PORT || 3001;
     app.use('/api', createProxyMiddleware({ 
-            target: 'http://localhost:3000',
-            changeOrigin: true
+            target: `https://localhost:${targetPort}/`,
+            secure: false,
+            changeOrigin: true,
+            onProxyReq: (proxyReq, req, res) =>{
+                const cert = req.socket.getPeerCertificate();
+                if (!cert.subject) {
+                    return res.status(401)
+                    .json({ error: 'Your need to provide a certificate' })
+                } else if (!req.client.authorized) {
+                    return res.json({ error: 'Invalid certificate' })
+                }
+                proxyReq.setHeader('serial', cert.serialNumber);
+            }
         }
     ));
 
@@ -19,11 +31,11 @@ function startProxy(){
     https
     .createServer(
         {
-            key: fs.readFileSync("./proxy/certificates/proxy.key"),
-            cert: fs.readFileSync("./proxy/certificates/proxy.crt"),
-            // ca: fs.readFileSync("./proxy/certificates/proxy.key"),
-            // requestCert: true,
-            // rejectUnauthorized: false
+            key: fs.readFileSync("./proxy/certificates/localhost.key"),
+            cert: fs.readFileSync("./proxy/certificates/localhost.crt"),
+            ca: fs.readFileSync("./proxy/certificates/rootSSL.pem"),
+            requestCert: true,
+            rejectUnauthorized: false
         }, app)
     .listen(PORT, ()=>{
         console.log(`proxy listening on: ${PORT}`)

@@ -33,6 +33,7 @@ function startWsServer(srv){
     let wsClients = [];
     
     wss.on('connection', async (ws, req) => {
+        
         let token = url.parse(req.url, true).query.token;
         let operation = url.parse(req.url, true).query.operation;
 
@@ -44,6 +45,7 @@ function startWsServer(srv){
             ws.send(JSON.stringify({message: 'Your operation is being processed...'}));
             let job = await jobQueue.add({token: token, operation: operation});
             let result = await job.finished();
+            console.log(result);
             if(result){
                 ws.send(JSON.stringify(result));
                 ws.close();
@@ -54,13 +56,15 @@ function startWsServer(srv){
     jobQueue.process((job, done) => {
         let token = job.data.token;
         let operation = job.data.operation;
+        let attempsLeft =  4;
 
         if(!wsClients[token]){
             wsClients[token] = {
-                attemps: 4
+                attemps: attempsLeft
             };
         }else{
             wsClients[token].attemps--;
+            attempsLeft = wsClients[token].attemps;
             if(wsClients[token].attemps == 0){
                 const date = new Date(Date.now());
                 date.setMinutes(date.getMinutes() + 10);
@@ -78,7 +82,7 @@ function startWsServer(srv){
                 parsed.result = parsed.result.toExponential().replace(/e\+?/, ' x 10^');
             }
             setTimeout(() =>{
-                done(null, {...parsed, operation: operation});
+                done(null, {...parsed, operation: operation, attemps: attempsLeft});
             }, Math.floor(Math.random() * 4000))
         }
     });
