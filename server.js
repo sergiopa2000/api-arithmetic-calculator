@@ -5,8 +5,6 @@ const fs = require("fs");
 
 const bodyparser = require('body-parser');
 const cors = require('cors');
-const startProxy = require('./proxy/proxy-server');
-const startWsServer = require('./ws/ws-server');
 require('dotenv').config()
 
 const app = express();
@@ -18,7 +16,7 @@ app.use('/api', authRoutes);
 const calcRoutes = require('./routes/calculator');
 app.use('/api', calcRoutes);
 
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@localhost:1888/?authMechanism=DEFAULT`, {
+mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@mongo_bd_global:27017/?authMechanism=DEFAULT&directConnection=true`, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         dbName: process.env.DB_NAME,
@@ -37,13 +35,11 @@ setInterval(async () =>{
 }, 1000);
 
 const PORT = process.env.PORT || 3001;
-const srv = https
+https
     .createServer({
-        key: fs.readFileSync("./proxy/certificates/localhost.key"),
-        cert: fs.readFileSync("./proxy/certificates/localhost.crt"),
+        key: fs.readFileSync("./certificates/localhost.key"),
+        cert: fs.readFileSync("./certificates/localhost.crt"),
     }, app)
     .listen(PORT, ()=>{
         console.log(`server listening on: ${PORT}`)
-        startProxy();
-        startWsServer(srv);
     });
